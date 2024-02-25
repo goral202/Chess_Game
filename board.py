@@ -12,7 +12,39 @@ from resource import *
 
 
 class ChessBoard(QGraphicsScene):
+    """
+    ChessBoard class represents the main game board.
+
+    Attributes:
+    - b_view (int): Board view option.
+    - square_size (int): Size of each square on the chessboard.
+    - current_turn (str): Current turn ('white' or 'black').
+    - checkwhite (bool): True if white king is in check.
+    - checkblack (bool): True if black king is in check.
+    - kingwpos (list): Position of the white king.
+    - kingbpos (list): Position of the black king.
+    - buffkingwpos (list): Buffer for white king position.
+    - buffkingbpos (list): Buffer for black king position.
+    - timer1_id (int): Timer ID for white player turn.
+    - timer2_id (int): Timer ID for black player turn.
+
+    Methods:
+    - check_white(): Check if the white king is in check.
+    - check_black(): Check if the black king is in check.
+    - timerEvent(event): Handle timer events for player turns.
+    - init_board(): Initialize the chessboard with pieces and squares.
+    - update_board(x, y, fig): Update the board after a move.
+
+    """
+
     def __init__(self):
+        """
+        Initialize the ChessBoard.
+
+        - Sets up initial game state.
+        - Initializes timers for player turns.
+
+        """
         super().__init__()
         self.b_view = 1
         self.square_size = 120
@@ -24,30 +56,51 @@ class ChessBoard(QGraphicsScene):
         self.buffkingwpos = [3*self.square_size, 0*self.square_size]
         self.buffkingbpos = [4*self.square_size, 7*self.square_size]
         self.init_board()
-        self.timer1_id = self.startTimer(1000)  # pierwszy timer wywołuje funkcję timerEvent1
+        self.timer1_id = self.startTimer(1000)
         self.timer2_id = self.startTimer(1000) 
 
     def check_white(self):
+        """
+        Check if the white king is in check.
+
+        Returns:
+        - bool: True if white king is in check.
+
+        """
         for item in self.items():
             if not isinstance(item, Square) and item.color == 'black':
                 if item.is_valid_move2(self.kingwpos[0],self.kingwpos[1]):
                     self.checkwhite = True
-                    print("szach bialy")
+                    print("CHECK White")
                     return True
         self.checkwhite = False
         return False
 
     def check_black(self):
+        """
+        Check if the black king is in check.
+
+        Returns:
+        - bool: True if black king is in check.
+
+        """
         for item in self.items():
             if not isinstance(item, Square) and item.color == 'white':
                 if item.is_valid_move2(self.kingbpos[0],self.kingbpos[1]):
                     self.checkblack = True
-                    print("szach czarny")
+                    print("CHECK Black")
                     return True
         self.checkblack = True
         return False
     
     def timerEvent(self, event):
+        """
+        Handle timer events for player turns.
+
+        Parameters:
+        - event (QTimerEvent): Timer event triggering the function.
+
+        """
         if event.timerId() == self.timer1_id:
             self.check_white()
         elif event.timerId() == self.timer2_id:
@@ -57,6 +110,10 @@ class ChessBoard(QGraphicsScene):
                 
 
     def init_board(self):
+        """
+        Initialize the chessboard with pieces and squares.
+
+        """
         self.colors = [[Qt.white, Qt.lightGray],
                        [Qt.yellow, Qt.darkYellow],
                        [Qt.blue, Qt.darkBlue]]
@@ -117,6 +174,15 @@ class ChessBoard(QGraphicsScene):
         self.addItem(queenb)
         
     def update_board(self, x, y, fig):
+        """
+        Update the board after a move.
+
+        Parameters:
+        - x (int): Target x-coordinate for the move.
+        - y (int): Target y-coordinate for the move.
+        - fig (str): Name of the chess piece class.
+
+        """
         for item in self.items():
             fig_class = globals()[fig]
             if isinstance(item, fig_class):

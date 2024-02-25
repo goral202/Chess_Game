@@ -5,12 +5,36 @@ from PyQt5.QtCore import *
 import sys
 
 class Clock(QWidget):
+    """
+    Clock class represents a simple clock widget.
+
+    Attributes:
+    - timer (QTimer): Timer for periodic updates.
+    - time (int): Current time in milliseconds.
+    - count (bool): Flag indicating whether the countdown is active.
+    - hPointer, mPointer, sPointer, msPointer (QPolygon): Polygons representing hour, minute, second, and millisecond pointers.
+    - bColor, sColor, msColor (QColor): Colors for pointers.
+    - timer (QTimer): Timer for continuous updates.
+
+    Methods:
+    - count_down(): Decrement time and update widget.
+    - paintEvent(event): Paint the clock widget.
+    - mousePressEvent(event): Toggle countdown on mouse press.
+
+    """
+
     def __init__(self):
+        """
+        Initialize the Clock widget.
+
+        - Set up timers and initial properties.
+
+        """
         super().__init__()
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.count_down)
-        self.time = 5 * 60 * 1000 # czas pozostały do odliczenia w milisekundach
-        self.count = True # zmienna śledząca stan zegara
+        self.time = 5 * 60 * 1000
+        self.count = True
         self.setWindowTitle('Clock')
         self.setGeometry(200, 200, 300, 300)
         self.setStyleSheet("background : white;")
@@ -25,6 +49,12 @@ class Clock(QWidget):
         self.timer.start(1)
 
     def count_down(self):
+        """
+        Decrement the time and update the widget.
+
+        If counting, decrement the time. If the time reaches zero, stop the countdown.
+
+        """
         if self.count:
             self.time -= 1
             if self.time <= 0:
@@ -37,11 +67,26 @@ class Clock(QWidget):
 
 
     def paintEvent(self, event):
+        """
+        Paint the clock widget.
+
+        Draw the clock face, pointers, and scale.
+
+        """
         rec = min(self.width(), self.height())
 
         painter = QPainter(self)
 
         def drawPointer(color, rotation, pointer):
+            """
+            Helper method to draw a pointer on the clock face.
+
+            Parameters:
+            - color: Color of the pointer.
+            - rotation: Rotation angle for the pointer.
+            - pointer: QPolygon defining the shape of the pointer.
+
+            """
             painter.setBrush(QBrush(color))
             painter.save()
             painter.rotate(rotation)
@@ -69,10 +114,15 @@ class Clock(QWidget):
         painter.end()
 
     def mousePressEvent(self, event):
+        """
+        Toggle the countdown on mouse press.
+
+        """
         if not self.count:
             self.count = True
         else:
             self.count = False
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
